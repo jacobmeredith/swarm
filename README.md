@@ -44,6 +44,6 @@ swarm  -c collections -f example -n GetGoogle
 
 ### Running a get request
 ```
-swarm get --url htts://google.com
+swarm get --url https://google.com
 ```
 
