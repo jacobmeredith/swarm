@@ -21,7 +21,10 @@ to quickly create a Cobra application.`,
 		fn := cmd.Flag("file-name").Value.String()
 		name := cmd.Flag("name").Value.String()
 
-		collections.RunCollectionRequest(cd, fn, name)
+		err := collections.RunCollectionRequest(cd, fn, name)
+		if err != nil {
+			cmd.PrintErr(err)
+		}
 	},
 }
 
