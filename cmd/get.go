@@ -1,36 +1,27 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/jacobmeredith/swarm/internal/requests"
 	"github.com/spf13/cobra"
 )
 
-// getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Make a get request to a URL",
+	Long: `This command allows you to make a GET request to a specified URL. For example:
+swarm get -u https://google.com`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
+		err := requests.Get(cmd.Flag("url").Value.String())
+		if err != nil {
+			cmd.PrintErr(err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(getCmd)
 
-	// Here you will define your flags and configuration settings.
+	getCmd.Flags().StringP("url", "u", "", "URL to get")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	getCmd.MarkFlagRequired("url")
 }

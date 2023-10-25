@@ -3,10 +3,10 @@ package cmd
 import (
 	"os"
 
+	"github.com/jacobmeredith/swarm/internal/collections"
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "swarm",
 	Short: "A brief description of your application",
@@ -16,13 +16,15 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		cd := cmd.Flag("collection-directory").Value.String()
+		fn := cmd.Flag("file-name").Value.String()
+		name := cmd.Flag("name").Value.String()
+
+		collections.RunCollectionRequest(cd, fn, name)
+	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -31,13 +33,10 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	rootCmd.Flags().StringP("collection-directory", "c", "collections", "The directory where collections are stored")
+	rootCmd.Flags().StringP("file-name", "f", "", "The file name of the collection")
+	rootCmd.Flags().StringP("name", "n", "", "The name of the request to run")
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.swarm.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.MarkFlagRequired("file-name")
+	rootCmd.MarkFlagRequired("name")
 }
