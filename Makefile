@@ -4,4 +4,4 @@ install_dependencies:
 
 build_cli:
 	@echo "Building CLI Application"
-	@go build -o bin/swarm cmd/swarm/main.go
+	@go build -o bin/swarm main.go
