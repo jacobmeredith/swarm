@@ -17,8 +17,9 @@ After doing these steps you can run the executable
 
 ## Usage
 ### Running a request from collection
-Set up a collection by creating a yaml file (e.g. collections/example.yaml) with the following format:
+Set up a collection by creating a yaml or json file (e.g. collections/example.yaml/json) with the following format:
 
+#### Yaml example
 ```yaml
 requests:
     GetGoogle: 
@@ -29,17 +30,34 @@ requests:
         url: https://discord.com
 ```
 
+#### Json example
+```json
+{
+    "requests": {
+        "GetGoogle": {
+            "method": "GET",
+            "url": "https://google.com"
+        },
+        "GetDiscord": {
+            "method": "GET",
+            "url": "https://discord.com"
+        }
+    }
+}
+```
+
 The main command will run a request from the collection when provided with the following arguments:
 ```
 -c, --collection-directory string   The directory where collections are stored (default "collections")
 -f, --file-name string              The file name of the collection
 -h, --help                          help for swarm
--n, --name string                   The name of the request to run
+-n, --request-name string                   The name of the request to run
 ```
 
 Example of the command
 ```
-swarm  -c collections -f example -n GetGoogle
+swarm  -c collections -f example.json -n GetGoogle
+swarm  -c collections -f example.yaml -n GetGoogle
 ```
 
 ### Running a get request

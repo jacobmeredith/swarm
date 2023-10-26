@@ -1,0 +1,8 @@
+{
+	"requests": {
+		"GetGoogle": {
+			"method": "GET",
+			"url": "https://google.com"
+		}
+	}
+}

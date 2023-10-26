@@ -19,9 +19,9 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cd := cmd.Flag("collection-directory").Value.String()
 		fn := cmd.Flag("file-name").Value.String()
-		name := cmd.Flag("name").Value.String()
+		rn := cmd.Flag("request-name").Value.String()
 
-		err := collections.RunCollectionRequest(cd, fn, name)
+		err := collections.RunCollectionRequest(cd, fn, rn)
 		if err != nil {
 			cmd.PrintErr(err)
 		}
@@ -38,7 +38,7 @@ func Execute() {
 func init() {
 	rootCmd.Flags().StringP("collection-directory", "c", "collections", "The directory where collections are stored")
 	rootCmd.Flags().StringP("file-name", "f", "", "The file name of the collection")
-	rootCmd.Flags().StringP("name", "n", "", "The name of the request to run")
+	rootCmd.Flags().StringP("request-name", "n", "", "The name of the request to run")
 
 	rootCmd.MarkFlagRequired("file-name")
 	rootCmd.MarkFlagRequired("name")

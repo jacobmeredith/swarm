@@ -1,19 +1,20 @@
 package collections
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/jacobmeredith/swarm/internal/requests"
 )
 
 type Collection struct {
-	Requests map[string]requests.Request `yaml:"requests"`
+	Requests map[string]requests.Request `yaml:"requests" json:"requests"`
 }
 
 func RunCollectionRequest(directory, filename, name string) error {
-	yp := NewYamlParser(directory + "/" + filename + ".yaml")
+	cb := NewCollectionBuilder(fmt.Sprintf("%v/%v", directory, filename))
 
-	collection, err := yp.ParseFile()
+	collection, err := cb.Build()
 	if err != nil {
 		return err
 	}
@@ -22,10 +23,8 @@ func RunCollectionRequest(directory, filename, name string) error {
 
 	switch request.Method {
 	case "GET":
-		requests.Get(request.Url)
+		return requests.Get(request.Url)
 	default:
-		fmt.Println("Method not supported")
+		return errors.New("Method not supported")
 	}
-
-	return nil
 }
