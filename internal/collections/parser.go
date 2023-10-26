@@ -2,7 +2,6 @@ package collections
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -13,7 +12,6 @@ type CollectionBuilder struct {
 }
 
 func NewCollectionBuilder(path string) *CollectionBuilder {
-	fmt.Printf("%+v\n", path)
 	typeSplits := strings.Split(path, ".")
 	fileType := typeSplits[len(typeSplits)-1]
 
@@ -44,11 +42,9 @@ func (b *CollectionBuilder) Build() (*Collection, error) {
 	switch b.fileType {
 	case "yaml":
 		collection, err = ParseYamlFile(contents)
-		fmt.Printf("%+v\n", collection)
 		return &collection, err
 	case "json":
 		collection, err = ParseJsonFile(contents)
-		fmt.Printf("%+v\n", collection)
 		return &collection, err
 	default:
 		return &collection, errors.New("File type not supported")
