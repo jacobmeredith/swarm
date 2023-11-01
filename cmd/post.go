@@ -1,36 +1,32 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/jacobmeredith/swarm/internal/requests"
 	"github.com/spf13/cobra"
 )
 
 // postCmd represents the post command
 var postCmd = &cobra.Command{
 	Use:   "post",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Make a post request to a URL",
+	Long: `This command allows you to make a POST request to a specified URL. For example:
+	swarm get -u https://google.com --content-type application/json --body="{\"test\": true}"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("post called")
+		err := requests.Post(cmd.Flag("url").Value.String(), cmd.Flag("content-type").Value.String(), cmd.Flag("body").Value.String())
+		if err != nil {
+			cmd.PrintErr(err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(postCmd)
 
-	// Here you will define your flags and configuration settings.
+	postCmd.Flags().StringP("url", "u", "", "URL to get")
+	postCmd.Flags().String("content-type", "", "Content type of the request body")
+	postCmd.Flags().StringP("body", "b", "", "Body in string format")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// postCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// postCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	postCmd.MarkFlagRequired("url")
+	postCmd.MarkFlagRequired("content-type")
+	postCmd.MarkFlagRequired("body")
 }

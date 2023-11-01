@@ -2,3 +2,8 @@ requests:
   GetGoogle: 
     method: GET
     url: https://google.com
+  PostLocalServer:
+    method: POST
+    url: http://localhost:8080/user
+    content-type: application/json
+    body: "{\"email\":\"test@test.com\",\"password\":\"password1@\"}"

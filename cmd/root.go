@@ -41,5 +41,5 @@ func init() {
 	rootCmd.Flags().StringP("request-name", "n", "", "The name of the request to run")
 
 	rootCmd.MarkFlagRequired("file-name")
-	rootCmd.MarkFlagRequired("name")
+	rootCmd.MarkFlagRequired("request-name")
 }

@@ -24,6 +24,9 @@ func RunCollectionRequest(directory, filename, name string) error {
 	switch request.Method {
 	case "GET":
 		return requests.Get(request.Url)
+	case "POST":
+		return requests.Post(request.Url, request.ContentType, request.Body)
+
 	default:
 		return errors.New("Method not supported")
 	}
