@@ -82,4 +82,7 @@ swarm -c collections -f example.yaml -n GetGoogle
 ```
 swarm --method GET --url https://google.com
 ```
-
+### Running a post request
+```
+swarm --method POST --url https://google.com --content-type application/json --body="{\"test\":true}"
+```
