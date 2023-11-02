@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"net/http"
+
 	"github.com/jacobmeredith/swarm/internal/requests"
 	"github.com/spf13/cobra"
 )
@@ -11,7 +13,8 @@ var getCmd = &cobra.Command{
 	Long: `This command allows you to make a GET request to a specified URL. For example:
 swarm get -u https://google.com`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := requests.Get(cmd.Flag("url").Value.String())
+		request := requests.NewRequest(http.MethodGet, cmd.Flag("url").Value.String(), "", "")
+		err := request.Run()
 		if err != nil {
 			cmd.PrintErr(err)
 		}

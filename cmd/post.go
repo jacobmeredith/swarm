@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"net/http"
+
 	"github.com/jacobmeredith/swarm/internal/requests"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +14,8 @@ var postCmd = &cobra.Command{
 	Long: `This command allows you to make a POST request to a specified URL. For example:
 	swarm get -u https://google.com --content-type application/json --body="{\"test\": true}"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := requests.Post(cmd.Flag("url").Value.String(), cmd.Flag("content-type").Value.String(), cmd.Flag("body").Value.String())
+		request := requests.NewRequest(http.MethodPost, cmd.Flag("url").Value.String(), cmd.Flag("content-type").Value.String(), cmd.Flag("body").Value.String())
+		err := request.Run()
 		if err != nil {
 			cmd.PrintErr(err)
 		}
