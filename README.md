@@ -28,6 +28,11 @@ requests:
     GetDiscord: 
         method: GET
         url: https://discord.com
+    PostExample: 
+        method: POST
+        url: https://localhost:8080
+        content-type: application/json
+        body: "{\"test\":true}"
 ```
 
 #### Json example
@@ -41,27 +46,40 @@ requests:
         "GetDiscord": {
             "method": "GET",
             "url": "https://discord.com"
+        },
+        "PostExample": {
+            "method": "POST",
+            "url": "https://localhost:8080",
+            "contentType": "application/json",
+            "body": "{\"test\":true}"
         }
     }
 }
 ```
 
-The main command will run a request from the collection when provided with the following arguments:
+These arguments are used to run a request from a collection:
 ```
 -c, --collection-directory string   The directory where collections are stored (default "collections")
 -f, --file-name string              The file name of the collection
--h, --help                          help for swarm
--n, --request-name string                   The name of the request to run
+-n, --request-name string           The name of the request to run
+```
+
+These arguments are used to run a request straight from the CLI:
+```
+-b, --body string                   Body in string format
+--content-type string               Content type of the request body
+-m, --method string                 Method for request
+-u, --url string                    URL for request
 ```
 
 Example of the command
 ```
-swarm  -c collections -f example.json -n GetGoogle
-swarm  -c collections -f example.yaml -n GetGoogle
+swarm -c collections -f example.json -n GetGoogle
+swarm -c collections -f example.yaml -n GetGoogle
 ```
 
 ### Running a get request
 ```
-swarm get --url https://google.com
+swarm --method GET --url https://google.com
 ```
 
