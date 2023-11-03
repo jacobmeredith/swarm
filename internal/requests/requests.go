@@ -8,10 +8,11 @@ import (
 )
 
 type Request struct {
-	Url         string `yaml:"url" json:"url"`
-	Method      string `yaml:"method" json:"method"`
-	ContentType string `yaml:"content-type" json:"contentType"`
-	Body        string `yaml:"body" json:"body"`
+	Url         string            `yaml:"url" json:"url"`
+	Method      string            `yaml:"method" json:"method"`
+	ContentType string            `yaml:"content-type" json:"contentType"`
+	Body        string            `yaml:"body" json:"body"`
+	Headers     map[string]string `yaml:"headers" json:"headers"`
 }
 
 func NewRequest(method, url, contentType, body string) *Request {
@@ -31,6 +32,10 @@ func (r *Request) buildBody() io.Reader {
 
 func (r *Request) buildHeaders(req *http.Request) {
 	req.Header.Set("content-type", r.ContentType)
+
+	for key, value := range r.Headers {
+		req.Header.Set(key, value)
+	}
 }
 
 func (r *Request) getResBody(res *http.Response) ([]byte, error) {

@@ -7,3 +7,5 @@ requests:
     url: http://localhost:8080/user
     content-type: application/json
     body: "{\"email\":\"test@test.com\",\"password\":\"password1@\"}"
+    headers:
+      authorization: Bearer token
