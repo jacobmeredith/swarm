@@ -33,6 +33,8 @@ requests:
         url: https://localhost:8080
         content-type: application/json
         body: "{\"test\":true}"
+        headers:
+            authorization: Bearer token
 ```
 
 #### Json example
@@ -51,7 +53,10 @@ requests:
             "method": "POST",
             "url": "https://localhost:8080",
             "contentType": "application/json",
-            "body": "{\"test\":true}"
+            "body": "{\"test\":true}",
+            "headers": {
+                "authorization": "Bearer token"
+            }
         }
     }
 }
