@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type Request struct {
@@ -15,12 +16,25 @@ type Request struct {
 	Headers     map[string]string `yaml:"headers" json:"headers"`
 }
 
-func NewRequest(method, url, contentType, body string) *Request {
+func ParseHeaders(sHeaders string) map[string]string {
+	headers := make(map[string]string)
+
+	parts := strings.Split(sHeaders, ",")
+	for _, p := range parts {
+		pSplit := strings.Split(p, ":")
+		headers[pSplit[0]] = pSplit[1]
+	}
+
+	return headers
+}
+
+func NewRequest(method, url, contentType, body string, headers map[string]string) *Request {
 	return &Request{
 		Method:      method,
 		Url:         url,
 		ContentType: contentType,
 		Body:        body,
+		Headers:     headers,
 	}
 }
 
