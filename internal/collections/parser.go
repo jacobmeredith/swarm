@@ -2,27 +2,30 @@ package collections
 
 import (
 	"errors"
-	"os"
 	"strings"
 )
+
+type FileReader = func(string) ([]byte, error)
 
 type CollectionBuilder struct {
 	path     string
 	fileType string
+	reader   FileReader
 }
 
-func NewCollectionBuilder(path string) *CollectionBuilder {
+func NewCollectionBuilder(path string, reader FileReader) *CollectionBuilder {
 	typeSplits := strings.Split(path, ".")
 	fileType := typeSplits[len(typeSplits)-1]
 
 	return &CollectionBuilder{
 		path:     path,
 		fileType: fileType,
+		reader:   reader,
 	}
 }
 
 func (p *CollectionBuilder) getFileContents() ([]byte, error) {
-	b, err := os.ReadFile(p.path)
+	b, err := p.reader(p.path)
 	if err != nil {
 		return nil, err
 	}

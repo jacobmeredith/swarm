@@ -3,6 +3,7 @@ package collections
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/jacobmeredith/swarm/internal/requests"
 )
@@ -12,7 +13,7 @@ type Collection struct {
 }
 
 func RunCollectionRequest(directory, filename, name string) error {
-	cb := NewCollectionBuilder(fmt.Sprintf("%v/%v", directory, filename))
+	cb := NewCollectionBuilder(fmt.Sprintf("%v/%v", directory, filename), os.ReadFile)
 
 	collection, err := cb.Build()
 	if err != nil {
