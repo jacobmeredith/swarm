@@ -37,9 +37,12 @@ jobs:
         run:  make install_dependencies 
       - name: Build
         run: make build_cli
-      - name: Attach asset
-        uses: AButler/upload-release-assets@v2.0
+      - name: Upload
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: './bin/swarm'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: ${{ github.ref }}
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./bin/swarm
+          asset_name: swarm
+          asset_content_type: binary/octet-stream
