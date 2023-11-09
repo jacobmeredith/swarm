@@ -13,7 +13,13 @@ type Collection struct {
 }
 
 func RunCollectionRequest(directory, filename, name string) error {
-	cb := NewCollectionBuilder(fmt.Sprintf("%v/%v", directory, filename), os.ReadFile)
+	path := fmt.Sprintf("%v/%v", directory, filename)
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		return errors.New("Unable to read file")
+	}
+
+	cb := NewCollectionBuilder(path, contents)
 
 	collection, err := cb.Build()
 	if err != nil {

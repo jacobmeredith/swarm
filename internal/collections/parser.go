@@ -5,49 +5,33 @@ import (
 	"strings"
 )
 
-type FileReader = func(string) ([]byte, error)
-
 type CollectionBuilder struct {
 	path     string
 	fileType string
-	reader   FileReader
+	contents []byte
 }
 
-func NewCollectionBuilder(path string, reader FileReader) *CollectionBuilder {
+func NewCollectionBuilder(path string, contents []byte) *CollectionBuilder {
 	typeSplits := strings.Split(path, ".")
 	fileType := typeSplits[len(typeSplits)-1]
 
 	return &CollectionBuilder{
 		path:     path,
 		fileType: fileType,
-		reader:   reader,
+		contents: contents,
 	}
-}
-
-func (p *CollectionBuilder) getFileContents() ([]byte, error) {
-	b, err := p.reader(p.path)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
 }
 
 func (b *CollectionBuilder) Build() (*Collection, error) {
 	var collection Collection
 	var err error
 
-	contents, err := b.getFileContents()
-	if err != nil {
-		return &collection, err
-	}
-
 	switch b.fileType {
 	case "yaml":
-		collection, err = ParseYamlFile(contents)
+		collection, err = ParseYamlFile(b.contents)
 		return &collection, err
 	case "json":
-		collection, err = ParseJsonFile(contents)
+		collection, err = ParseJsonFile(b.contents)
 		return &collection, err
 	default:
 		return &collection, errors.New("File type not supported")

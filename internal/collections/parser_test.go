@@ -5,16 +5,15 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	cb := NewCollectionBuilder("test.json", func(path string) ([]byte, error) {
-		return []byte(`{
+	cb := NewCollectionBuilder("test.json", []byte(`{
 			"requests": {
 				"GetTest": {
 					"method": "GET",
 					"url": "https://google.com"
 				}
 			}
-		}`), nil
-	})
+		}`),
+	)
 
 	collection, err := cb.Build()
 	if err != nil {
