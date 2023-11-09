@@ -6,8 +6,25 @@ on:
 name: Create Release
 
 jobs:
-  build:
+  release:
     name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ""
+          draft: false
+          prerelease: false
+  build:
+    name: Build and add binary
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,17 +37,6 @@ jobs:
         run:  make install_dependencies 
       - name: Build
         run: make build_cli
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ""
-          draft: false
-          prerelease: false
       - name: Attach asset
         uses: AButler/upload-release-assets@v2.0
         with:
