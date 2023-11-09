@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/charmbracelet/glamour"
 )
 
 type Request struct {
@@ -77,7 +79,35 @@ func (r *Request) Run() error {
 
 	}
 
-	fmt.Println(string(resBody))
+	// Move this somehwere else to keep this functions responsibility to just run the request
+	renderer, _ := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+		glamour.WithWordWrap(100),
+		glamour.WithBaseURL("white"),
+		glamour.WithStylesFromJSONBytes([]byte(`{
+			"link": {
+				"color": "white",
+				"underline": true,
+				"block_prefix": "(",
+				"block_suffix": ")"
+			},
+			"link_text": {
+				"color": "white",
+				"bold": true
+			}
+		}`)),
+	)
+
+	md := fmt.Sprintf(`# %v [%v](%v)
+		%v
+		`, r.Method, r.Url, r.Url, string(resBody))
+
+	out, err := renderer.Render(md)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(out)
 
 	return nil
 }
