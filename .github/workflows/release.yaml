@@ -20,10 +20,6 @@ jobs:
         run:  make install_dependencies 
       - name: Build
         run: make build_cli
-      - uses: AButler/upload-release-assets@v2.0
-        with:
-          files: './bin/swarm'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -35,3 +31,8 @@ jobs:
           body: ""
           draft: false
           prerelease: false
+      - name: Attach asset
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: './bin/swarm'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
