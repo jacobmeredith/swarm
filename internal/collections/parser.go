@@ -6,17 +6,15 @@ import (
 )
 
 type CollectionBuilder struct {
-	path     string
 	fileType string
 	contents []byte
 }
 
-func NewCollectionBuilder(path string, contents []byte) *CollectionBuilder {
-	typeSplits := strings.Split(path, ".")
+func NewCollectionBuilder(filename string, contents []byte) *CollectionBuilder {
+	typeSplits := strings.Split(filename, ".")
 	fileType := typeSplits[len(typeSplits)-1]
 
 	return &CollectionBuilder{
-		path:     path,
 		fileType: fileType,
 		contents: contents,
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParser(t *testing.T) {
+func TestJsonParser(t *testing.T) {
 	cb := NewCollectionBuilder("test.json", []byte(`{
 			"requests": {
 				"GetTest": {

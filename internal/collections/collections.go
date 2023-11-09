@@ -19,7 +19,7 @@ func RunCollectionRequest(directory, filename, name string) error {
 		return errors.New("Unable to read file")
 	}
 
-	cb := NewCollectionBuilder(path, contents)
+	cb := NewCollectionBuilder(filename, contents)
 
 	collection, err := cb.Build()
 	if err != nil {
