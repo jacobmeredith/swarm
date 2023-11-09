@@ -2,6 +2,8 @@ package collections
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParser(t *testing.T) {
@@ -22,11 +24,6 @@ func TestParser(t *testing.T) {
 
 	testRequest := collection.Requests["GetTest"]
 
-	if testRequest.Url != "https://google.com" {
-		t.Fatal("Url is incorrect")
-	}
-
-	if testRequest.Method != "GET" {
-		t.Fatal("Method is incorrect")
-	}
+	assert.Equal(t, "https://google.com", testRequest.Url)
+	assert.Equal(t, "GET", testRequest.Method)
 }
