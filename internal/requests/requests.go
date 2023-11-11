@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/charmbracelet/glamour"
+	"github.com/jacobmeredith/swarm/internal/responses"
 )
 
 type Request struct {
@@ -54,14 +54,6 @@ func (r *Request) buildHeaders(req *http.Request) {
 	}
 }
 
-func (r *Request) getResBody(res *http.Response) ([]byte, error) {
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
-}
-
 func (r *Request) Run() error {
 	body := r.buildBody()
 	req, _ := http.NewRequest(r.Method, r.Url, body)
@@ -73,36 +65,8 @@ func (r *Request) Run() error {
 		return err
 	}
 
-	resBody, err := r.getResBody(res)
-	if err != nil {
-		return err
-
-	}
-
-	// Move this somehwere else to keep this functions responsibility to just run the request
-	renderer, _ := glamour.NewTermRenderer(
-		glamour.WithAutoStyle(),
-		glamour.WithWordWrap(100),
-		glamour.WithBaseURL("white"),
-		glamour.WithStylesFromJSONBytes([]byte(`{
-			"link": {
-				"color": "white",
-				"underline": true,
-				"block_prefix": "(",
-				"block_suffix": ")"
-			},
-			"link_text": {
-				"color": "white",
-				"bold": true
-			}
-		}`)),
-	)
-
-	md := fmt.Sprintf(`# %v [%v](%v)
-		%v
-		`, r.Method, r.Url, r.Url, string(resBody))
-
-	out, err := renderer.Render(md)
+	resBuilder := responses.NewResponseBuilder(req, res)
+	out, err := resBuilder.Render()
 	if err != nil {
 		return err
 	}
