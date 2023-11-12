@@ -52,9 +52,8 @@ func (r *ResponseBuilder) Render() (string, error) {
 		return "", err
 	}
 
-	md := fmt.Sprintf(`# %v [%v](%v)
-		%v
-		`, r.req.Method, r.req.URL, r.req.URL, string(body))
+	md := fmt.Sprintf("# %v [%v](%v)\n", r.req.Method, r.req.URL, r.req.URL)
+	md += fmt.Sprintf("```\n%v\n```", string(body))
 
 	return renderer.Render(md)
 }
