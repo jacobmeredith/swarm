@@ -46,6 +46,11 @@ func (r *ResponseBuilder) getBody() ([]byte, error) {
 	return body, nil
 }
 
+func (r *ResponseBuilder) buildJsonResponse(body []byte) (string, error) {
+
+	return fmt.Sprintf("```json\n%v\n```", string(body)), nil
+}
+
 func (r *ResponseBuilder) Render() (string, error) {
 	body, err := r.getBody()
 	if err != nil {
@@ -53,7 +58,16 @@ func (r *ResponseBuilder) Render() (string, error) {
 	}
 
 	md := fmt.Sprintf("# %v [%v](%v)\n", r.req.Method, r.req.URL, r.req.URL)
-	md += fmt.Sprintf("```\n%v\n```", string(body))
+
+	switch r.res.Header.Get("Content-type") {
+	case "application/json":
+		json, _ := r.buildJsonResponse(body)
+		md += json
+		break
+	default:
+		md += fmt.Sprintf("```\n%v\n```", string(body))
+		break
+	}
 
 	return renderer.Render(md)
 }

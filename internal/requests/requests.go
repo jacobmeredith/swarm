@@ -22,6 +22,11 @@ func ParseHeaders(sHeaders string) map[string]string {
 	headers := make(map[string]string)
 
 	parts := strings.Split(sHeaders, ",")
+
+	if len(parts) == 1 && parts[0] == "" {
+		return headers
+	}
+
 	for _, p := range parts {
 		pSplit := strings.Split(p, ":")
 		headers[pSplit[0]] = pSplit[1]

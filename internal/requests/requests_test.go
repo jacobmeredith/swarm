@@ -13,4 +13,9 @@ func TestParseHeaders(t *testing.T) {
 	assert.Len(t, parsed, 2, "Length should be 2")
 	assert.Equal(t, "Bearer token", parsed["authorization"])
 	assert.Equal(t, "test", parsed["x-test-header"])
+
+	headerString = ""
+	parsed = ParseHeaders(headerString)
+
+	assert.Len(t, parsed, 0)
 }
