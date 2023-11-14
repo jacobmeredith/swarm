@@ -1,10 +1,13 @@
 package responses
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
+	"github.com/Joker/hpp"
 	"github.com/charmbracelet/glamour"
 )
 
@@ -47,8 +50,12 @@ func (r *ResponseBuilder) getBody() ([]byte, error) {
 }
 
 func (r *ResponseBuilder) buildJsonResponse(body []byte) (string, error) {
-
 	return fmt.Sprintf("```json\n%v\n```", string(body)), nil
+}
+
+func (r *ResponseBuilder) buildHtmlResponse(body []byte) string {
+	pretty := hpp.Print(bytes.NewReader(body))
+	return fmt.Sprintf("```html\n%v\n```", string(pretty))
 }
 
 func (r *ResponseBuilder) Render() (string, error) {
@@ -59,15 +66,19 @@ func (r *ResponseBuilder) Render() (string, error) {
 
 	md := fmt.Sprintf("# %v [%v](%v)\n", r.req.Method, r.req.URL, r.req.URL)
 
-	switch r.res.Header.Get("Content-type") {
-	case "application/json":
+	ct := r.res.Header.Get("Content-type")
+
+	if strings.Contains(ct, "application/json") {
 		json, _ := r.buildJsonResponse(body)
 		md += json
-		break
-	default:
-		md += fmt.Sprintf("```\n%v\n```", string(body))
-		break
+		return renderer.Render(md)
 	}
 
+	if strings.Contains(ct, "text/html") {
+		md += r.buildHtmlResponse(body)
+		return renderer.Render(md)
+	}
+
+	md += fmt.Sprintf("```\n%v\n```", string(body))
 	return renderer.Render(md)
 }

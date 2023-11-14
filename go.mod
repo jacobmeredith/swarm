@@ -3,6 +3,7 @@ module github.com/jacobmeredith/swarm
 go 1.21.3
 
 require (
+	github.com/Joker/hpp v1.0.0 // indirect
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/aymanbagabas/go-osc52 v1.2.2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
