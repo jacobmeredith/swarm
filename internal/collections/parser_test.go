@@ -12,7 +12,10 @@ func TestJsonParser(t *testing.T) {
 			"requests": {
 				"GetTest": {
 					"method": "GET",
-					"url": "https://google.com"
+					"url": "https://google.com",
+					"headers": {
+						"Content-Type": "application/json"
+					}
 				}
 			}
 		}`),
@@ -27,6 +30,7 @@ func TestJsonParser(t *testing.T) {
 
 	assert.Equal(t, "https://google.com", testRequest.Url)
 	assert.Equal(t, "GET", testRequest.Method)
+	assert.Equal(t, "application/json", testRequest.Headers["Content-Type"])
 }
 
 func TestYamlParser(t *testing.T) {
@@ -35,6 +39,9 @@ func TestYamlParser(t *testing.T) {
 			"GetTest": map[string]interface{}{
 				"method": "GET",
 				"url":    "https://google.com",
+				"headers": map[string]interface{}{
+					"Content-Type": "application/json",
+				},
 			},
 		},
 	})
@@ -52,4 +59,5 @@ func TestYamlParser(t *testing.T) {
 
 	assert.Equal(t, "https://google.com", testRequest.Url)
 	assert.Equal(t, "GET", testRequest.Method)
+	assert.Equal(t, "application/json", testRequest.Headers["Content-Type"])
 }
