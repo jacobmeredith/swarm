@@ -49,8 +49,8 @@ func (r *ResponseBuilder) getBody() ([]byte, error) {
 	return body, nil
 }
 
-func (r *ResponseBuilder) buildJsonResponse(body []byte) (string, error) {
-	return fmt.Sprintf("```json\n%v\n```", string(body)), nil
+func (r *ResponseBuilder) buildJsonResponse(body []byte) string {
+	return fmt.Sprintf("```json\n%v\n```", string(body))
 }
 
 func (r *ResponseBuilder) buildHtmlResponse(body []byte) string {
@@ -69,7 +69,7 @@ func (r *ResponseBuilder) Render() (string, error) {
 	ct := r.res.Header.Get("Content-type")
 
 	if strings.Contains(ct, "application/json") {
-		json, _ := r.buildJsonResponse(body)
+		json := r.buildJsonResponse(body)
 		md += json
 		return renderer.Render(md)
 	}
