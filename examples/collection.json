@@ -11,6 +11,9 @@
 			"body": "{\"email\":\"test@example.com\",\"password\":\"password1\"}",
 			"headers": {
 				"authorization": "Bearer token"
+			},
+			"cookies": {
+				"test-cookie": "cookie-value"
 			}
 		}
 	}

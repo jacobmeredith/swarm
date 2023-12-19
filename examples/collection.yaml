@@ -9,3 +9,5 @@ requests:
     body: "{\"email\":\"test@test.com\",\"password\":\"password1@\"}"
     headers:
       authorization: Bearer token
+    cookies:
+      test-cookie: test-value

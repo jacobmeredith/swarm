@@ -35,6 +35,8 @@ requests:
         body: "{\"test\":true}"
         headers:
             authorization: Bearer token
+        cookies:
+            token: TOKEN_VALUE
 ```
 
 #### Json example
@@ -56,6 +58,9 @@ requests:
             "body": "{\"test\":true}",
             "headers": {
                 "authorization": "Bearer token"
+            },
+            "cookies": {
+                "token": "TOKEN_VALUE"
             }
         }
     }
@@ -74,6 +79,7 @@ These arguments are used to run a request straight from the CLI:
 -b, --body string                   Body in string format
 --content-type string               Content type of the request body
 --headers                           Headers in following format "key:value,key2:value2"
+--cookies                           Cookies in following format "key:value,key2:value2"
 -m, --method string                 Method for request
 -u, --url string                    URL for request
 ```
@@ -90,5 +96,5 @@ swarm --method GET --url https://google.com
 ```
 ### Running a post request
 ```
-swarm --method POST --url https://google.com --content-type application/json --body="{\"test\":true}" --headers="authorization:Bearer token"
+swarm --method POST --url https://google.com --content-type application/json --body="{\"test\":true}" --headers="authorization:Bearer token" --cookies="token:TOKEN_VALUE"
 ```

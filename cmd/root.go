@@ -43,9 +43,11 @@ var rootCmd = &cobra.Command{
 		ct := cmd.Flag("content-type").Value.String()
 		body := cmd.Flag("body").Value.String()
 		headers := cmd.Flag("headers").Value.String()
-		pHeaders := requests.ParseHeaders(headers)
+		pHeaders := requests.ParseKeyValuePairString(headers, ",", ":")
+		cookies := cmd.Flag("cookies").Value.String()
+		pCookies := requests.ParseKeyValuePairString(cookies, ",", ":")
 
-		request := requests.NewRequest(method, url, ct, body, pHeaders)
+		request := requests.NewRequest(method, url, ct, body, pHeaders, pCookies)
 
 		err := request.Run()
 		if err != nil {
@@ -73,4 +75,5 @@ func init() {
 	rootCmd.Flags().String("content-type", "", "Content type of the request body")
 	rootCmd.Flags().StringP("body", "b", "", "Body in string format")
 	rootCmd.Flags().String("headers", "", "Headers in following format \"key:value,key2:value2\"")
+	rootCmd.Flags().String("cookies", "", "Cookies in following format \"key:value,key2:value2\"")
 }
