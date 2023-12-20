@@ -11,3 +11,7 @@ build_windows:
 	@GOOS=windows GOARCH=amd64 go build -o bin/swarm.exe main.go
 
 release: build_cli build_windows
+
+run_tests:
+	@echo "Running Tests"
+	@go test -v ./... -v -count=1
