@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/jacobmeredith/swarm/internal/collections"
 	"github.com/jacobmeredith/swarm/internal/requests"
 	"github.com/spf13/cobra"
 )
@@ -19,11 +18,6 @@ var rootCmd = &cobra.Command{
 		request_name := cmd.Flag("request-name").Value.String()
 
 		if collection_directory != "" && file_name != "" && request_name != "" {
-			err := collections.RunCollectionRequest(collection_directory, file_name, request_name)
-			if err != nil {
-				cmd.PrintErr(err)
-			}
-
 			return
 		}
 
@@ -43,13 +37,22 @@ var rootCmd = &cobra.Command{
 		content_type := cmd.Flag("content-type").Value.String()
 		body := cmd.Flag("body").Value.String()
 		headers := cmd.Flag("headers").Value.String()
-		pHeaders := requests.ParseKeyValuePairString(headers, ",", ":")
 		cookies := cmd.Flag("cookies").Value.String()
-		pCookies := requests.ParseKeyValuePairString(cookies, ",", ":")
 
-		request := requests.NewRequest(method, url, content_type, body, pHeaders, pCookies)
+		request, err := requests.NewRequest(requests.RequestCreatorOptions{
+			Url:         url,
+			Method:      method,
+			ContentType: content_type,
+			Body:        body,
+			Headers:     headers,
+			Cookies:     cookies,
+		})
 
-		err := request.Run()
+		if err != nil {
+			cmd.PrintErr(err)
+		}
+
+		_, err = request.Build()
 		if err != nil {
 			cmd.PrintErr(err)
 		}
