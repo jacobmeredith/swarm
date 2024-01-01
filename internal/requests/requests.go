@@ -15,20 +15,20 @@ type Request struct {
 	Cookies     map[string]string
 }
 
-func NewRequest(options RequestCreatorOptions) (*Request, error) {
+func NewRequest(config RequestConfig) (*Request, error) {
 	errs := make([]error, 0)
 
-	url, err := options.getUrl()
+	url, err := config.getUrl()
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	method, err := options.getMethod()
+	method, err := config.getMethod()
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	content_type, err := options.getValidContentType()
+	content_type, err := config.getValidContentType()
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -37,9 +37,9 @@ func NewRequest(options RequestCreatorOptions) (*Request, error) {
 		Url:         url,
 		Method:      method,
 		ContentType: content_type,
-		Body:        options.getBody(),
-		Headers:     options.getHeaders(),
-		Cookies:     options.getCookies(),
+		Body:        config.getBody(),
+		Headers:     config.getHeaders(),
+		Cookies:     config.getCookies(),
 	}, errors.Join(errs...)
 }
 

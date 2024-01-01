@@ -20,7 +20,7 @@ func splitKeyValuePairString(text string, delimete string, separator string) map
 	return kv
 }
 
-type RequestCreatorOptions struct {
+type RequestConfig struct {
 	Url         string
 	Method      string
 	ContentType string
@@ -29,7 +29,7 @@ type RequestCreatorOptions struct {
 	Cookies     string
 }
 
-func (rco *RequestCreatorOptions) getUrl() (string, error) {
+func (rco *RequestConfig) getUrl() (string, error) {
 	if rco.Url == "" {
 		return "", errors.New("No URL provided")
 	}
@@ -37,7 +37,7 @@ func (rco *RequestCreatorOptions) getUrl() (string, error) {
 	return rco.Url, nil
 }
 
-func (rco *RequestCreatorOptions) getMethod() (string, error) {
+func (rco *RequestConfig) getMethod() (string, error) {
 	if rco.Method == "" {
 		return "", errors.New("No method provided")
 	}
@@ -51,7 +51,7 @@ func (rco *RequestCreatorOptions) getMethod() (string, error) {
 	return rco.Method, nil
 }
 
-func (rco *RequestCreatorOptions) getValidContentType() (string, error) {
+func (rco *RequestConfig) getValidContentType() (string, error) {
 	if rco.ContentType == "" {
 		return "", errors.New("No content type provided")
 	}
@@ -63,7 +63,7 @@ func (rco *RequestCreatorOptions) getValidContentType() (string, error) {
 	return rco.ContentType, nil
 }
 
-func (rco *RequestCreatorOptions) getBody() io.Reader {
+func (rco *RequestConfig) getBody() io.Reader {
 	if rco.Body == "" {
 		return nil
 	}
@@ -71,7 +71,7 @@ func (rco *RequestCreatorOptions) getBody() io.Reader {
 	return strings.NewReader(rco.Body)
 }
 
-func (rco *RequestCreatorOptions) getHeaders() map[string]string {
+func (rco *RequestConfig) getHeaders() map[string]string {
 	if rco.Headers == "" {
 		return nil
 	}
@@ -79,7 +79,7 @@ func (rco *RequestCreatorOptions) getHeaders() map[string]string {
 	return splitKeyValuePairString(rco.Headers, ",", ":")
 }
 
-func (rco *RequestCreatorOptions) getCookies() map[string]string {
+func (rco *RequestConfig) getCookies() map[string]string {
 	if rco.Cookies == "" {
 		return nil
 	}

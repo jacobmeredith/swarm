@@ -1,12 +1,8 @@
 package requests
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 func getFileType(filename string) string {
@@ -24,34 +20,16 @@ type CollectionRequest struct {
 }
 
 type Collection struct {
-	Requests map[string]CollectionRequest `yaml:"requests" json:"requests"`
+	Directory string
+	Filename  string
+	Path      string
+	Requests  map[string]CollectionRequest `yaml:"requests" json:"requests"`
 }
 
-func NewCollection(directory, filename, name string) (*Collection, error) {
-	path := fmt.Sprintf("%s/%s", directory, filename)
-
-	file_contents, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+func NewCollection(directory, filename, name string) *Collection {
+	return &Collection{
+		Directory: directory,
+		Filename:  filename,
+		Path:      fmt.Sprintf("%s/%s", directory, filename),
 	}
-
-	file_type := getFileType(filename)
-	collection := new(Collection)
-
-	switch file_type {
-	case "yaml":
-		err = yaml.Unmarshal(file_contents, &collection)
-		if err != nil {
-			return nil, err
-		}
-	case "json":
-		err = json.Unmarshal(file_contents, &collection)
-		if err != nil {
-			return nil, err
-		}
-	default:
-		return nil, fmt.Errorf("Unsupported file type: %s", file_type)
-	}
-
-	return collection, nil
 }

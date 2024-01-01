@@ -39,7 +39,7 @@ var rootCmd = &cobra.Command{
 		headers := cmd.Flag("headers").Value.String()
 		cookies := cmd.Flag("cookies").Value.String()
 
-		request, err := requests.NewRequest(requests.RequestCreatorOptions{
+		request, err := requests.NewRequest(requests.RequestConfig{
 			Url:         url,
 			Method:      method,
 			ContentType: content_type,
