@@ -95,9 +95,7 @@ func (rco *RequestCreatorOptions) getBody() io.Reader {
 	}
 
 	body := []byte(rco.Body)
-	reader := bytes.NewReader(body)
-
-	return reader
+	return bytes.NewReader(body)
 }
 
 type RequestCreator struct {
