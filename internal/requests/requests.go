@@ -2,90 +2,127 @@ package requests
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
-
-	"github.com/jacobmeredith/swarm/internal/responses"
 )
 
-type Request struct {
-	Url         string            `yaml:"url" json:"url"`
-	Method      string            `yaml:"method" json:"method"`
-	ContentType string            `yaml:"content-type" json:"contentType"`
-	Body        string            `yaml:"body" json:"body"`
-	Headers     map[string]string `yaml:"headers" json:"headers"`
-	Cookies     map[string]string `yaml:"cookies" json:"cookies"`
+type RequestCreatorOptions struct {
+	Url         string
+	Method      string
+	ContentType string
+	Body        string
+	Headers     string
+	Cookies     string
 }
 
-func ParseKeyValuePairString(text string, pair_delimeter string, value_delimeter string) map[string]string {
-	values_map := make(map[string]string)
-
-	parts := strings.Split(text, pair_delimeter)
-
-	if len(parts) == 1 && parts[0] == "" {
-		return values_map
-	}
-
-	for _, p := range parts {
-		pSplit := strings.Split(p, value_delimeter)
-		values_map[pSplit[0]] = pSplit[1]
-	}
-
-	return values_map
+type RequestConfig struct {
+	Url         string
+	Method      string
+	ContentType string
+	Body        io.Reader
+	Headers     map[string]string
+	Cookies     map[string]string
 }
 
-func NewRequest(method, url, contentType, body string, headers map[string]string, cookies map[string]string) *Request {
-	return &Request{
-		Method:      method,
+func NewRequestConfig(options RequestCreatorOptions) (*RequestConfig, []error) {
+	errors := make([]error, 0)
+
+	url, err := options.getUrl()
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	method, err := options.getMethod()
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	content_type, err := options.getValidContentType()
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	request_config := &RequestConfig{
 		Url:         url,
-		ContentType: contentType,
-		Body:        body,
-		Headers:     headers,
-		Cookies:     cookies,
+		Method:      method,
+		ContentType: content_type,
+		Body:        options.getBody(),
 	}
+
+	return request_config, errors
 }
 
-func (r *Request) buildBody() io.Reader {
-	body := []byte(r.Body)
-	br := bytes.NewReader(body)
-	return br
-}
-
-func (r *Request) buildHeaders(req *http.Request) {
-	req.Header.Set("content-type", r.ContentType)
-
-	for key, value := range r.Headers {
-		req.Header.Set(key, value)
+func (rco *RequestCreatorOptions) getUrl() (string, error) {
+	if rco.Url == "" {
+		return "", errors.New("No URL provided")
 	}
+
+	return rco.Url, nil
 }
 
-func (r *Request) buildCookies(req *http.Request) {
-	for key, value := range r.Cookies {
-		req.AddCookie(&http.Cookie{Name: key, Value: value})
+func (rco *RequestCreatorOptions) getMethod() (string, error) {
+	if rco.Method == "" {
+		return "", errors.New("No method provided")
 	}
+
+	methods := []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodOptions, http.MethodHead}
+
+	if !slices.Contains(methods, rco.Method) {
+		return "", errors.New("Invalid method provided")
+	}
+
+	return rco.Method, nil
 }
 
-func (r *Request) Run() error {
-	body := r.buildBody()
-	req, _ := http.NewRequest(r.Method, r.Url, body)
-	r.buildHeaders(req)
-	r.buildCookies(req)
+func (rco *RequestCreatorOptions) getValidContentType() (string, error) {
+	if rco.ContentType == "" {
+		return "", errors.New("No content type provided")
+	}
 
-	client := &http.Client{}
-	res, err := client.Do(req)
+	if len(strings.Split(rco.ContentType, "/")) < 2 {
+		return "", errors.New("Invalid content type provided")
+	}
+
+	return rco.ContentType, nil
+}
+
+func (rco *RequestCreatorOptions) getBody() io.Reader {
+	if rco.Body == "" {
+		return nil
+	}
+
+	body := []byte(rco.Body)
+	reader := bytes.NewReader(body)
+
+	return reader
+}
+
+type RequestCreator struct {
+	config      *RequestConfig
+	http_client *http.Client
+}
+
+func NewRequestCreator(options RequestCreatorOptions, http_client *http.Client) (*RequestCreator, error) {
+	request_config, errs := NewRequestConfig(options)
+
+	if len(errs) > 0 {
+		return nil, errors.Join(errs...)
+	}
+
+	return &RequestCreator{
+		config:      request_config,
+		http_client: http_client,
+	}, nil
+}
+
+func (rc *RequestCreator) Create() (*http.Response, error) {
+	_, err := http.NewRequest(rc.config.Method, rc.config.Url, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	resBuilder := responses.NewResponseBuilder(req, res)
-	out, err := resBuilder.Render()
-	if err != nil {
-		return err
-	}
-
-	fmt.Print(out)
-
-	return nil
+	return nil, nil
 }
