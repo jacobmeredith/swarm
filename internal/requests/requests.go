@@ -18,7 +18,7 @@ type RequestCreatorOptions struct {
 	Cookies     string
 }
 
-type RequestConfig struct {
+type Request struct {
 	Url         string
 	Method      string
 	ContentType string
@@ -27,7 +27,7 @@ type RequestConfig struct {
 	Cookies     map[string]string
 }
 
-func NewRequestConfig(options RequestCreatorOptions) (*RequestConfig, []error) {
+func NewRequestConfig(options RequestCreatorOptions) (*Request, []error) {
 	errors := make([]error, 0)
 
 	url, err := options.getUrl()
@@ -45,7 +45,7 @@ func NewRequestConfig(options RequestCreatorOptions) (*RequestConfig, []error) {
 		errors = append(errors, err)
 	}
 
-	request_config := &RequestConfig{
+	request_config := &Request{
 		Url:         url,
 		Method:      method,
 		ContentType: content_type,
@@ -99,7 +99,7 @@ func (rco *RequestCreatorOptions) getBody() io.Reader {
 }
 
 type RequestCreator struct {
-	config      *RequestConfig
+	config      *Request
 	http_client *http.Client
 }
 
