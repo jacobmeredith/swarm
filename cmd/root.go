@@ -14,12 +14,12 @@ var rootCmd = &cobra.Command{
 	Short: "A command line utitlity to make HTTP requests",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		cd := cmd.Flag("collection-directory").Value.String()
-		fn := cmd.Flag("file-name").Value.String()
-		rn := cmd.Flag("request-name").Value.String()
+		collection_directory := cmd.Flag("collection-directory").Value.String()
+		file_name := cmd.Flag("file-name").Value.String()
+		request_name := cmd.Flag("request-name").Value.String()
 
-		if cd != "" && fn != "" && rn != "" {
-			err := collections.RunCollectionRequest(cd, fn, rn)
+		if collection_directory != "" && file_name != "" && request_name != "" {
+			err := collections.RunCollectionRequest(collection_directory, file_name, request_name)
 			if err != nil {
 				cmd.PrintErr(err)
 			}
@@ -40,14 +40,14 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
-		ct := cmd.Flag("content-type").Value.String()
+		content_type := cmd.Flag("content-type").Value.String()
 		body := cmd.Flag("body").Value.String()
 		headers := cmd.Flag("headers").Value.String()
 		pHeaders := requests.ParseKeyValuePairString(headers, ",", ":")
 		cookies := cmd.Flag("cookies").Value.String()
 		pCookies := requests.ParseKeyValuePairString(cookies, ",", ":")
 
-		request := requests.NewRequest(method, url, ct, body, pHeaders, pCookies)
+		request := requests.NewRequest(method, url, content_type, body, pHeaders, pCookies)
 
 		err := request.Run()
 		if err != nil {
@@ -58,6 +58,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	err := rootCmd.Execute()
+
 	if err != nil {
 		os.Exit(1)
 	}
