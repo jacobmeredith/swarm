@@ -27,7 +27,7 @@ type Request struct {
 	Cookies     map[string]string
 }
 
-func NewRequestConfig(options RequestCreatorOptions) (*Request, []error) {
+func NewRequest(options RequestCreatorOptions) (*Request, []error) {
 	errors := make([]error, 0)
 
 	url, err := options.getUrl()
@@ -104,7 +104,7 @@ type RequestCreator struct {
 }
 
 func NewRequestCreator(options RequestCreatorOptions, http_client *http.Client) (*RequestCreator, error) {
-	request_config, errs := NewRequestConfig(options)
+	request_config, errs := NewRequest(options)
 
 	if len(errs) > 0 {
 		return nil, errors.Join(errs...)
