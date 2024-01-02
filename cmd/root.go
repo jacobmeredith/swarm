@@ -15,15 +15,38 @@ var rootCmd = &cobra.Command{
 	Short: "A command line utitlity to make HTTP requests",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		runner := runner.NewRunner(&http.Client{})
+		var request *requests.Request
 
-		// collection_directory := cmd.Flag("collection-directory").Value.String()
-		// file_name := cmd.Flag("file-name").Value.String()
-		// request_name := cmd.Flag("request-name").Value.String()
-		//
-		// if collection_directory != "" && file_name != "" && request_name != "" {
-		// 	return
-		// }
+		runner := runner.NewRunner(&http.Client{})
+		response_formatter := responses.NewDefaultResponseFormatter()
+		runner.SetResponseFormatter(response_formatter)
+
+		collection_directory := cmd.Flag("collection-directory").Value.String()
+		file_name := cmd.Flag("file-name").Value.String()
+		request_name := cmd.Flag("request-name").Value.String()
+
+		if collection_directory != "" && file_name != "" && request_name != "" {
+			collection, err := requests.NewCollection(collection_directory, file_name)
+			if err != nil {
+				cmd.PrintErr(err)
+				return
+			}
+
+			request, err = collection.TransformRequest(request_name)
+			if err != nil {
+				cmd.PrintErr(err)
+				return
+			}
+
+			formatted_response, err := runner.Run(request)
+			if err != nil {
+				cmd.PrintErr(err)
+				return
+			}
+
+			println(formatted_response)
+			return
+		}
 
 		method := cmd.Flag("method").Value.String()
 		url := cmd.Flag("url").Value.String()
@@ -44,12 +67,10 @@ var rootCmd = &cobra.Command{
 			cmd.PrintErr(err)
 		}
 
-		response_formatter := responses.NewDefaultResponseFormatter()
-		runner.SetResponseFormatter(response_formatter)
-
 		formatted_response, err := runner.Run(request)
 		if err != nil {
 			cmd.PrintErr(err)
+			return
 		}
 
 		println(formatted_response)
