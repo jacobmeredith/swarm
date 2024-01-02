@@ -8,9 +8,13 @@ import (
 	"strings"
 )
 
-func splitKeyValuePairString(text string, delimete string, separator string) map[string]string {
+func splitKeyValuePairString(text string, delimeter string, separator string) map[string]string {
 	kv := make(map[string]string)
-	parts := strings.Split(text, delimete)
+	parts := strings.Split(text, delimeter)
+
+	if len(parts) == 1 && parts[0] == "" {
+		return nil
+	}
 
 	for _, part := range parts {
 		kvPair := strings.Split(part, separator)
