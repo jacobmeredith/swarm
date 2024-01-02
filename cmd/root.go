@@ -1,10 +1,12 @@
 package cmd
 
 import (
-	"errors"
+	"net/http"
 	"os"
 
 	"github.com/jacobmeredith/swarm/internal/requests"
+	"github.com/jacobmeredith/swarm/internal/responses"
+	"github.com/jacobmeredith/swarm/internal/runner"
 	"github.com/spf13/cobra"
 )
 
@@ -13,27 +15,18 @@ var rootCmd = &cobra.Command{
 	Short: "A command line utitlity to make HTTP requests",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		collection_directory := cmd.Flag("collection-directory").Value.String()
-		file_name := cmd.Flag("file-name").Value.String()
-		request_name := cmd.Flag("request-name").Value.String()
+		runner := runner.NewRunner(&http.Client{})
 
-		if collection_directory != "" && file_name != "" && request_name != "" {
-			return
-		}
+		// collection_directory := cmd.Flag("collection-directory").Value.String()
+		// file_name := cmd.Flag("file-name").Value.String()
+		// request_name := cmd.Flag("request-name").Value.String()
+		//
+		// if collection_directory != "" && file_name != "" && request_name != "" {
+		// 	return
+		// }
 
 		method := cmd.Flag("method").Value.String()
 		url := cmd.Flag("url").Value.String()
-
-		if method == "" {
-			cmd.PrintErr(errors.New("No method provided"))
-			return
-		}
-
-		if url == "" {
-			cmd.PrintErr(errors.New("No URL provided"))
-			return
-		}
-
 		content_type := cmd.Flag("content-type").Value.String()
 		body := cmd.Flag("body").Value.String()
 		headers := cmd.Flag("headers").Value.String()
@@ -47,21 +40,24 @@ var rootCmd = &cobra.Command{
 			Headers:     headers,
 			Cookies:     cookies,
 		})
-
 		if err != nil {
 			cmd.PrintErr(err)
 		}
 
-		_, err = request.Build()
+		response_formatter := responses.NewDefaultResponseFormatter()
+		runner.SetResponseFormatter(response_formatter)
+
+		formatted_response, err := runner.Run(request)
 		if err != nil {
 			cmd.PrintErr(err)
 		}
+
+		println(formatted_response)
 	},
 }
 
 func Execute() {
 	err := rootCmd.Execute()
-
 	if err != nil {
 		os.Exit(1)
 	}
