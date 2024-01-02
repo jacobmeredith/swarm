@@ -26,7 +26,7 @@ type Collection struct {
 	Requests  map[string]CollectionRequest `yaml:"requests" json:"requests"`
 }
 
-func NewCollection(directory, filename, name string) *Collection {
+func NewCollection(directory, filename string) *Collection {
 	return &Collection{
 		Directory: directory,
 		Filename:  filename,
