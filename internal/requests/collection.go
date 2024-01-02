@@ -35,7 +35,7 @@ type CollectionFile struct {
 type CollectionRequest struct {
 	Url         string            `yaml:"url" json:"url"`
 	Method      string            `yaml:"method" json:"method"`
-	ContentType string            `yaml:"content_type" json:"content_type"`
+	ContentType string            `yaml:"content-type" json:"contentType"`
 	Body        string            `yaml:"body" json:"body"`
 	Headers     map[string]string `yaml:"headers" json:"headers"`
 	Cookies     map[string]string `yaml:"cookies" json:"cookies"`
