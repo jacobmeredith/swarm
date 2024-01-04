@@ -2,6 +2,7 @@ package responses
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -46,11 +47,27 @@ func (r *DefaultResponseFormatter) getBody() (string, error) {
 	return string(body), nil
 }
 
+func (r *DefaultResponseFormatter) getHeaders() string {
+	if r.native_response == nil {
+		return ""
+	}
+
+	headers := ""
+	for key, value := range r.native_response.Header {
+		headers += key + ": " + value[0] + "\n"
+	}
+
+	return headers
+}
+
 func (r *DefaultResponseFormatter) Format() (string, error) {
 	body, err := r.getBody()
 	if err != nil {
 		return "", err
 	}
 
-	return body, nil
+	headers := r.getHeaders()
+	response := fmt.Sprintf("headers:\n%s\nbody:\n%s", headers, body)
+
+	return response, nil
 }
