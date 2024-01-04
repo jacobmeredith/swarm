@@ -61,13 +61,20 @@ func (r *DefaultResponseFormatter) getHeaders() string {
 }
 
 func (r *DefaultResponseFormatter) Format() (string, error) {
+	response := ""
+
+	response += fmt.Sprintf("Request:\n%s %s\n", r.native_request.Method, r.native_request.URL.String())
+	response += fmt.Sprintf("Status: %s\n\n", r.native_response.Status)
+
+	headers := r.getHeaders()
+	response += fmt.Sprintf("Response:\nHeaders:\n%s\n", headers)
+
 	body, err := r.getBody()
 	if err != nil {
 		return "", err
 	}
 
-	headers := r.getHeaders()
-	response := fmt.Sprintf("headers:\n%s\nbody:\n%s", headers, body)
+	response += fmt.Sprintf("body:\n%s\n", body)
 
 	return response, nil
 }
