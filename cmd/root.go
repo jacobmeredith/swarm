@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"net/http"
 	"os"
 
@@ -44,7 +45,11 @@ var rootCmd = &cobra.Command{
 				return
 			}
 
+			writer := bufio.NewWriter(os.Stdout)
+			writer.WriteString(formatted_response)
+			writer.Flush()
 			println(formatted_response)
+
 			return
 		}
 
