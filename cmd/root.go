@@ -11,75 +11,115 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type CollectionDirectoryFlags struct {
+	directory   string
+	fileName    string
+	requestName string
+}
+
+func (cdf *CollectionDirectoryFlags) isValid() bool {
+	return cdf.fileName != "" && cdf.directory != "" && cdf.requestName != ""
+}
+
+type NormalFlags struct {
+	method      string
+	url         string
+	contentType string
+	body        string
+	headers     string
+	cookies     string
+}
+
+type Flags struct {
+	collectionFlags CollectionDirectoryFlags
+	normalFlags     NormalFlags
+}
+
+func getFlags(cmd *cobra.Command) *Flags {
+	return &Flags{
+		collectionFlags: CollectionDirectoryFlags{
+			directory:   cmd.Flag("collection-directory").Value.String(),
+			fileName:    cmd.Flag("file-name").Value.String(),
+			requestName: cmd.Flag("request-name").Value.String(),
+		},
+		normalFlags: NormalFlags{
+			method:      cmd.Flag("method").Value.String(),
+			url:         cmd.Flag("url").Value.String(),
+			contentType: cmd.Flag("content-type").Value.String(),
+			body:        cmd.Flag("body").Value.String(),
+			headers:     cmd.Flag("headers").Value.String(),
+			cookies:     cmd.Flag("cookies").Value.String(),
+		},
+	}
+}
+
+func execute(request *requests.Request) error {
+	runner := runner.NewRunner(&http.Client{})
+	formatter := responses.NewDefaultResponseFormatter()
+
+	runner.SetResponseFormatter(formatter)
+
+	formatted_response, err := runner.Run(request)
+	if err != nil {
+		return err
+	}
+
+	writer := bufio.NewWriter(os.Stdout)
+	writer.WriteString(formatted_response)
+	writer.Flush()
+
+	println(formatted_response)
+
+	return nil
+}
+
+func command(cmd *cobra.Command, args []string) {
+	flags := getFlags(cmd)
+
+	if flags.collectionFlags.isValid() {
+		// Run collection request
+		collection, err := requests.NewCollection(flags.collectionFlags.directory, flags.collectionFlags.fileName)
+		if err != nil {
+			cmd.PrintErr(err)
+			return
+		}
+
+		request, err := collection.TransformRequest(flags.collectionFlags.requestName)
+		if err != nil {
+			cmd.PrintErr(err)
+			return
+		}
+
+		if err := execute(request); err != nil {
+			cmd.PrintErr(err)
+		}
+
+		return
+	}
+
+	// Run adhoc request
+	request, err := requests.NewRequest(requests.RequestConfig{
+		Url:         flags.normalFlags.url,
+		Method:      flags.normalFlags.method,
+		ContentType: flags.normalFlags.contentType,
+		Body:        flags.normalFlags.body,
+		Headers:     flags.normalFlags.headers,
+		Cookies:     flags.normalFlags.cookies,
+	})
+	if err != nil {
+		cmd.PrintErr(err)
+	}
+
+	if err := execute(request); err != nil {
+		cmd.PrintErr(err)
+	}
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "swarm",
 	Short: "A command line utitlity to make HTTP requests",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		var request *requests.Request
-
-		runner := runner.NewRunner(&http.Client{})
-		response_formatter := responses.NewDefaultResponseFormatter()
-		runner.SetResponseFormatter(response_formatter)
-
-		collection_directory := cmd.Flag("collection-directory").Value.String()
-		file_name := cmd.Flag("file-name").Value.String()
-		request_name := cmd.Flag("request-name").Value.String()
-
-		if collection_directory != "" && file_name != "" && request_name != "" {
-			collection, err := requests.NewCollection(collection_directory, file_name)
-			if err != nil {
-				cmd.PrintErr(err)
-				return
-			}
-
-			request, err = collection.TransformRequest(request_name)
-			if err != nil {
-				cmd.PrintErr(err)
-				return
-			}
-
-			formatted_response, err := runner.Run(request)
-			if err != nil {
-				cmd.PrintErr(err)
-				return
-			}
-
-			writer := bufio.NewWriter(os.Stdout)
-			writer.WriteString(formatted_response)
-			writer.Flush()
-			println(formatted_response)
-
-			return
-		}
-
-		method := cmd.Flag("method").Value.String()
-		url := cmd.Flag("url").Value.String()
-		content_type := cmd.Flag("content-type").Value.String()
-		body := cmd.Flag("body").Value.String()
-		headers := cmd.Flag("headers").Value.String()
-		cookies := cmd.Flag("cookies").Value.String()
-
-		request, err := requests.NewRequest(requests.RequestConfig{
-			Url:         url,
-			Method:      method,
-			ContentType: content_type,
-			Body:        body,
-			Headers:     headers,
-			Cookies:     cookies,
-		})
-		if err != nil {
-			cmd.PrintErr(err)
-		}
-
-		formatted_response, err := runner.Run(request)
-		if err != nil {
-			cmd.PrintErr(err)
-			return
-		}
-
-		println(formatted_response)
-	},
+	Run:   command,
 }
 
 func Execute() {
